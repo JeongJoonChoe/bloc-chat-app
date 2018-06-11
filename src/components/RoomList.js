@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+
 class RoomList extends Component {
 	constructor(props) {
 		super(props);
@@ -38,7 +39,7 @@ class RoomList extends Component {
 			<div>
 				{
 					this.state.rooms.map( (room) =>
-						<p key={room.key}>{room.name} </p>
+						<button key={room.key} onClick={() => this.props.handleRoomClick(room)}>{room.name}</button>
 					)
 				}
 
