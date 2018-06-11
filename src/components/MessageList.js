@@ -5,7 +5,8 @@ class MessageList extends Component{
 		super(props);
 		this.state = {
 			messages: [],
-			displayedMessages:[]
+			displayedMessages:[],
+			newMessage:[]
 		}
 		this.messageRef = this.props.firebase.database().ref('messages');
 	}
@@ -18,9 +19,30 @@ class MessageList extends Component{
 		this.messageRef.on('child_added', snapshot => {
 			const messages = snapshot.val();
 			messages.key = snapshot.key;	
-			this.setState({messages: this.state.messages.concat(messages)});
+			this.setState({messages: this.state.messages.concat(messages)}, () =>
+				this.updateDisplayedMessages(this.props.activeRoomId));
 		})
 	}
+
+	createMessage(newMessage){
+		this.messageRef.push({
+			content: newMessage,
+			roomId: this.props.activeRoomId,
+			sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
+			username: this.props.user.displayName
+		})
+	}
+
+  	handleSubmit(event) {
+    	event.preventDefault();
+    	if (!this.state.newMessage || !this.props.user) { return }
+    	this.createMessage(this.state.newMessage);
+    	this.setState( {newMessage: ''});
+  	}	
+
+  	handleChange(event) {
+    	this.setState({ newMessage: event.target.value });
+  	}
 
 	updateDisplayedMessages(activeRoomId){
 		this.setState({displayedMessages: this.state.messages.filter(message => message.roomId === activeRoomId)});
@@ -31,9 +53,17 @@ class MessageList extends Component{
 			<div>
 				{
 					this.state.displayedMessages.map((message) =>
-						<p key={message.key}>{message.content}</p>
+						<p key={message.key}>{message.username}: {message.content}</p>
+
 					)
 				}
+
+				<form onSubmit={ (e) => this.handleSubmit(e) }>
+					<label>
+						<input type="text" value={ this.state.newMessage } onChange={ (e) => this.handleChange(e)} />
+					</label>
+					<input type="submit"/>
+				</form>
 			</div>
 		)
 	}
