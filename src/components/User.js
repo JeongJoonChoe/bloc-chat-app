@@ -27,8 +27,9 @@ class User extends Component {
 		}
 		return (
 			<div>
-				<button onClick={() => this.handleSignInClick()}>Sign In</button>
-				<button onClick={() => this.handleSignOutClick()}>Sign Out</button>
+				<button onClick={this.props.user ? () => this.handleSignOutClick() :() => this.handleSignInClick()}>
+					<span>{this.props.user ? "Sign Out" : "Sign In" }</span> 
+				</button>
 				<p>{userName}</p>
 			</div>
 		)

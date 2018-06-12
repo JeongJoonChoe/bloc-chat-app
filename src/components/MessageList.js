@@ -25,10 +25,11 @@ class MessageList extends Component{
 	}
 
 	createMessage(newMessage){
+		var currentTime = new Date();
 		this.messageRef.push({
 			content: newMessage,
 			roomId: this.props.activeRoomId,
-			sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
+			sentAt: currentTime.toLocaleTimeString(),
 			username: this.props.user.displayName
 		})
 	}
@@ -46,6 +47,9 @@ class MessageList extends Component{
 
 	updateDisplayedMessages(activeRoomId){
 		this.setState({displayedMessages: this.state.messages.filter(message => message.roomId === activeRoomId)});
+	}
+
+	formatTime(time) {
 	}		
 
 	render() {
@@ -53,7 +57,7 @@ class MessageList extends Component{
 			<div>
 				{
 					this.state.displayedMessages.map((message) =>
-						<p key={message.key}>{message.username}: {message.content}</p>
+						<p key={message.key}>{message.username}: {message.content} - {message.sentAt}</p>
 
 					)
 				}
